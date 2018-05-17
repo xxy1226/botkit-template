@@ -1,6 +1,6 @@
 {
   "description": "Modular Botkit template for Webex Teams",
-  "version": "0.7.0-plugin1",
+  "version": "0.7.0-plugin2",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"

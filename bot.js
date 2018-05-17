@@ -185,3 +185,5 @@ controller.setupWebserver(process.env.PORT || 3000, function (err, webserver) {
     }
 });
 
+// [COMPAT] Adding this function to ease interoperability with the skills part of the Botkit samples project
+bot.enrichCommand = bot.appendMention;
