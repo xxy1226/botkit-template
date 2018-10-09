@@ -40,8 +40,14 @@ function showUserPreference(controller, bot, message, userId, color) {
                 pattern: "^yes|ya|da|si|oui$",
                 callback: function (response, convo) {
 
-                    // [WORKAROUND] use storage.users.delete if in-memory storage and storage.users.remove if redis storage
-                    // controller.storage.users.remove(userId, function (err) { 
+                    // [WORKAROUND] Botkit uses different functions to delete persisted user data
+                    // - in-memory storage, use 'storage.users.delete()'
+                    // - redis storage, use 'storage.users.remove()'
+                    let deleteUserPref = controller.storage.users.delete;
+                    if (process.env.REDIS_URL) {
+                        deleteUserPref = controller.storage.users.remove;
+                    }
+                    
                     controller.storage.users.delete(userId, function (err) {
                         if (err) {
                             convo.say(message, 'sorry, could not access storage, err: ' + err.message);
