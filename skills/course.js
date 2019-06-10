@@ -108,10 +108,10 @@ function askForUserPreference(controller, bot, message, userId) {
                 // pattern: "^programming|accounting|network[ computing]|information[ system]|server[ administration]|web[ development]|1|2|3|4|5|6$",
                 pattern: regex,
                 callback: function (response, convo) {
-                    
+                    convo.extractResponse('answer') = convertCourse(convo.extractResponse('answer'));
 
                     // Store course as user preference
-                    var pickedCourse = convertCourse(convo.extractResponse('answer').toLowerCase());
+                    var pickedCourse = convo.extractResponse('answer');
                     
                     var userPreference = { id: userId + "course", value: pickedCourse };
                     controller.storage.users.save(userPreference, function (err) {
