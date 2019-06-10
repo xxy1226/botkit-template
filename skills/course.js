@@ -9,6 +9,7 @@ reg4 = /^4|[iI]nfo(r)?(rmation)?(sys)?( sys)?( system)?$/; // Information System
 reg5 = /^5|[sS]erver(admin)?( admin)?( [aA]dministration)?$/; // Server Administration
 reg6 = /^6|[wW]eb(dev)?( dev)?( [dD]evelopment)?$/; // Web Development
 regex = /^1|[pP]ro(gram)?(gramming)?|2|[aA]cc(ounting)?|3|[nN]et(work)?(working)?(work [cC]om)?(work [cC]omputing)?|4|[iI]nfo(r)?(rmation)?(sys)?( sys)?( system)?|5|[sS]erver(admin)?( admin)?( [aA]dministration)?|6|[wW]eb(dev)?( dev)?( [dD]evelopment)?$/;
+var pickedCourse = "";
 
 function convertCourse(course) {
     if (reg1.test(course)) {
@@ -108,10 +109,9 @@ function askForUserPreference(controller, bot, message, userId) {
                 // pattern: "^programming|accounting|network[ computing]|information[ system]|server[ administration]|web[ development]|1|2|3|4|5|6$",
                 pattern: regex,
                 callback: function (response, convo) {
-                    convo.extractResponse('answer') = convertCourse(convo.extractResponse('answer'));
 
                     // Store course as user preference
-                    var pickedCourse = convo.extractResponse('answer');
+                    pickedCourse = convertCourse(convo.extractResponse('answer'));
                     
                     var userPreference = { id: userId + "course", value: pickedCourse };
                     controller.storage.users.save(userPreference, function (err) {
@@ -142,7 +142,8 @@ function askForUserPreference(controller, bot, message, userId) {
 
         // Success thread
         convo.addMessage(
-            "Cool, your main course is '{{responses.answer}}'",
+            "Cool, your main course is '{{pickedCourse}}'",
+            // "Cool, your main course is '{{responses.answer}}'",
             "success");
     });
 }
