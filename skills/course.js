@@ -1,16 +1,13 @@
 //
 // Stores a user choice in Botkit 'users' storage, so that the value can be retreived later
 //
-
-reg1 = /^1|[pP]ro(gram)?(gramming)?$/; // Programming
-reg2 = /^2|[aA]cc(ounting)?$/; // Accounting
-reg3 = /^3|[nN]et(work)?(working)?(work [cC]om)?(work [cC]omputing)?$/; // Network Computing
-reg4 = /^4|[iI]nfo(r)?(rmation)?(sys)?( sys)?( system)?$/; // Information System
-reg5 = /^5|[sS]erver(admin)?( admin)?( [aA]dministration)?$/; // Server Administration
-reg6 = /^6|[wW]eb(dev)?( dev)?( [dD]evelopment)?$/; // Web Development
-regex = /^1|[pP]ro(gram)?(gramming)?|2|[aA]cc(ounting)?|3|[nN]et(work)?(working)?(work [cC]om)?(work [cC]omputing)?|4|[iI]nfo(r)?(rmation)?(sys)?( sys)?( system)?|5|[sS]erver(admin)?( admin)?( [aA]dministration)?|6|[wW]eb(dev)?( dev)?( [dD]evelopment)?$/;
-regbye = /^exit|esc(ape)?|bye(( )?bye)?$/;
-regyes = /^[yY][eE][sS]|[yY](a)?|da|oui|hey|shi|si|yeah|([oO])?[kK]|[oO][kK][aA][yY]|[sS][uU][rR][eE]$/;
+reg1 = /^1|[pP][rR][oO]([gG][rR][aA][mM])?([gG][rR][aA][mM][mM][iI][nN][gG])?$/; // Programming
+reg2 = /^2|[aA][cC][cC](ounting)?$/; // Accounting
+reg3 = /^3|[nN][eE][tT](work)?(working)?(work [cC]om)?(work [cC]omputing)?$/; // Network Computing
+reg4 = /^4|[iI][nN][fF][oO](r)?(rmation)?(sys)?( sys)?( system)?$/; // Information System
+reg5 = /^5|[sS][eE][rR][vV][eE][rR](admin)?( admin)?( [aA]dministration)?$/; // Server Administration
+reg6 = /^6|[wW][eE][bB]([dD][eE][vV])?( dev)?( [dD]evelopment)?$/; // Web Development
+regex = /^1|[pP][rR][oO]([gG][rR][aA][mM])?([gG][rR][aA][mM][mM][iI][nN][gG])?|2|[aA][cC][cC](ounting)?|3|[nN][eE][tT](work)?(working)?(work [cC]om)?(work [cC]omputing)?|4|[iI][nN][fF][oO](r)?(rmation)?(sys)?( sys)?( system)?|5|[sS][eE][rR][vV][eE][rR](admin)?( admin)?( [aA]dministration)?|6|[wW][eE][bB]([dD][eE][vV])?( dev)?( [dD]evelopment)?$/;
 
 function convertCourse(course) {
     if (reg1.test(course)) {
@@ -36,7 +33,7 @@ function convertCourse(course) {
 module.exports = function (controller) {
 
     // Create hearing event listener
-    controller.hears([/^course$/], 'direct_message,direct_mention', function (bot, message) {
+    controller.hears([/^[cC][oO][uU][rR][sS][eE]$/], 'direct_message,direct_mention', function (bot, message) {
 
         // Check if a User preference already exists
         var userId = message.raw_message.actorId;
@@ -107,7 +104,16 @@ function askForUserPreference(controller, bot, message, userId) {
     // Start a conversation
     bot.startConversation(message, function (err, convo) {
 
-        convo.ask("What is your main course?\n1. Programming\n2. Accounting\n3. Network Computing\n4. Information System\n5. Server Administration\n6. Web Development", [
+        question = "What is your main course?";
+        question += "\n<br/> `1.` Programming (**pro**)";
+        question += "\n<br/> `2.` Accounting (**acc**)";
+        question += "\n<br/> `3.` Network Computing (**net**)";
+        question += "\n<br/> `4.` Information System (**Info**)";
+        question += "\n<br/> `5.` Server Administration (**ser**)";
+        question += "\n<br/> `6.` Web Development (**web**)";
+        question += "\n\n<br/> `0.` Cancel";
+        question += '\n<br/>_(type a `number`, a **bold keyword** or "cancel")_';
+        convo.ask(question, [
             {
                 pattern: regex,
                 callback: function(response, convo) {
@@ -116,7 +122,7 @@ function askForUserPreference(controller, bot, message, userId) {
                 },
             },
             {
-                pattern: regbye,
+                pattern: regmenucancel,
                 callback: function(response, convo) {
                     convo.gotoThread("thread_exit");
                 },
@@ -161,7 +167,7 @@ function askForUserPreference(controller, bot, message, userId) {
                 },
             },
             {
-                pattern: regbye,
+                pattern: regmenucancel,
                 callback: function(response, convo) {
                     convo.gotoThread("thread_exit");
                 },

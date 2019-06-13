@@ -10,6 +10,7 @@
 // Load environment variables from project .env file
 require('node-env-file')(__dirname + '/.env');
 
+require(__dirname + '/.regex');
 
 // Fetch token from environement
 // [COMPAT] supports SPARK_TOKEN for backward compatibility
@@ -59,6 +60,8 @@ var configuration = {
     public_address: public_url,
     ciscospark_access_token: accessToken,
     secret: process.env.SECRET, // this is a RECOMMENDED security setting that checks if incoming payloads originate from Webex    webhook_name: process.env.WEBHOOK_NAME || ('built with BotKit (' + env + ')')
+    // ** The limit_to_domain properity incorrectly blocks messages from rrc.ca, and rises error to message from gmail.com
+    // limit_to_domain: ['@rrc.ca','@academic.rrc.ca','@RRC.CA'],
 }
 
 if (process.env.REDIS_URL) {
