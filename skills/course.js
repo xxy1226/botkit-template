@@ -9,7 +9,8 @@ reg4 = /^4|[iI]nfo(r)?(rmation)?(sys)?( sys)?( system)?$/; // Information System
 reg5 = /^5|[sS]erver(admin)?( admin)?( [aA]dministration)?$/; // Server Administration
 reg6 = /^6|[wW]eb(dev)?( dev)?( [dD]evelopment)?$/; // Web Development
 regex = /^1|[pP]ro(gram)?(gramming)?|2|[aA]cc(ounting)?|3|[nN]et(work)?(working)?(work [cC]om)?(work [cC]omputing)?|4|[iI]nfo(r)?(rmation)?(sys)?( sys)?( system)?|5|[sS]erver(admin)?( admin)?( [aA]dministration)?|6|[wW]eb(dev)?( dev)?( [dD]evelopment)?$/;
-var pickedCourse = "";
+regbye = /^exit|esc(ape)?|bye(( )?bye)?$/;
+regyes = /^[yY][eE][sS]|[yY](a)?|da|oui|hey|shi|si|yeah|([oO])?[kK]|[oO][kK][aA][yY]|[sS][uU][rR][eE]$/;
 
 function convertCourse(course) {
     if (reg1.test(course)) {
@@ -34,6 +35,7 @@ function convertCourse(course) {
 
 module.exports = function (controller) {
 
+    // Create hearing event listener
     controller.hears([/^course$/], 'direct_message,direct_mention', function (bot, message) {
 
         // Check if a User preference already exists
@@ -66,7 +68,7 @@ function showUserPreference(controller, bot, message, userId, course) {
 
         convo.ask("Should I erase your preference?  (yes/no)", [
             {
-                pattern: "^yes|y|ya|da|si|oui|shi$",
+                pattern: regyes,
                 callback: function (response, convo) {
 
                     // [WORKAROUND] Botkit uses different functions to delete persisted user data
@@ -76,8 +78,8 @@ function showUserPreference(controller, bot, message, userId, course) {
                     if (process.env.REDIS_URL) {
                         deleteUserPref = controller.storage.users.remove;
                     }
-                    
-                    deleteUserPref(userId + "course", function (err) { 
+
+                    deleteUserPref(userId + "course", function (err) {
                         if (err) {
                             convo.say(message, 'sorry, could not access storage, err: ' + err.message);
                             convo.repeat();
@@ -87,7 +89,6 @@ function showUserPreference(controller, bot, message, userId, course) {
                         convo.say("Successfully reset your preference.");
                         convo.next();
                     });
-
                 },
             },
             {
@@ -102,17 +103,52 @@ function showUserPreference(controller, bot, message, userId, course) {
 }
 
 function askForUserPreference(controller, bot, message, userId) {
+
+    // Start a conversation
     bot.startConversation(message, function (err, convo) {
 
         convo.ask("What is your main course?\n1. Programming\n2. Accounting\n3. Network Computing\n4. Information System\n5. Server Administration\n6. Web Development", [
             {
-                // pattern: "^programming|accounting|network[ computing]|information[ system]|server[ administration]|web[ development]|1|2|3|4|5|6$",
                 pattern: regex,
+                callback: function(response, convo) {
+                    convo.setVar("course", convertCourse(convo.extractResponse('answer')));
+                    convo.gotoThread("Confirm_course");
+                },
+            },
+            {
+                pattern: regbye,
+                callback: function(response, convo) {
+                    convo.gotoThread("thread_exit");
+                },
+            },
+            {
+                default: true,
                 callback: function (response, convo) {
+                    convo.gotoThread("bad_response");
+                },
+            },
+        ], {key: "answer"});
 
-                    // Store course as user preference
-                    pickedCourse = convertCourse(convo.extractResponse('answer'));
+        convo.addMessage("You picked '{{vars.course}}'","Confirm_course");
+
+        convo.addMessage({
+            text: "Ok, let's do it next time.",
+            action: 'stop',
+        },'thread_exit');
+
+        convo.addMessage({
+            text: "Sorry, I don't know this course.<br/>_Tip: you can try programming, accounting, network, infosys, server, webdev_",
+            action: 'default',
+        }, 'bad_response');
+
+        convo.addQuestion("Please, confirm your choice ? (yes|no)",[
+            {
+                pattern: regyes,
+                callback: function(response, convo) {
                     
+                    // Store course as user preference
+                    var pickedCourse = convertCourse(convo.extractResponse('answer'));
+
                     var userPreference = { id: userId + "course", value: pickedCourse };
                     controller.storage.users.save(userPreference, function (err) {
                         if (err) {
@@ -120,30 +156,24 @@ function askForUserPreference(controller, bot, message, userId) {
                             convo.next();
                             return;
                         }
-
-                        convo.transitionTo("success", "_successfully stored user preference_");
-                    });
-
+                    })
+                    convo.gotoThread("success", "_Ok, I remember your main course._");
+                },
+            },
+            {
+                pattern: regbye,
+                callback: function(response, convo) {
+                    convo.gotoThread("thread_exit");
                 },
             },
             {
                 default: true,
                 callback: function (response, convo) {
-                    convo.gotoThread('bad_response');
+                    convo.transitionTo("default", "Got it, let's try again...");
                 }
             }
-        ], { key: "answer" });
+        ], {}, "Confirm_course");
 
-        // Bad response
-        convo.addMessage({
-            text: "Sorry, I don't know this course.<br/>_Tip: try programming, accounting, network, infosys, server, webdev_",
-            action: 'default',
-        }, 'bad_response');
-
-        // Success thread
-        convo.addMessage(
-            // "Cool, your main course is '{{responses.answer}}'",
-            "Well down, enjoy your course",
-            "success");
+        convo.addMessage("Cool, your main course is '{{vars.course}}'.","success");
     });
 }
