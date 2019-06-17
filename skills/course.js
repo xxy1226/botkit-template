@@ -33,7 +33,7 @@ function convertCourse(course) {
 module.exports = function (controller) {
 
     // Create hearing event listener
-    controller.hears([/^[cC][oO][uU][rR][sS][eE]$/], 'direct_message,direct_mention', function (bot, message) {
+    controller.hears([/[cC][oO][uU][rR][sS][eE]/], 'direct_message,direct_mention', function (bot, message) {
 
         // Check if a User preference already exists
         var userId = message.raw_message.actorId;
@@ -128,7 +128,7 @@ function askForUserPreference(controller, bot, message, userId) {
         question += "\n<br/> `1.` Programming (**pro**)";
         question += "\n<br/> `2.` Accounting (**acc**)";
         question += "\n<br/> `3.` Network Computing (**net**)";
-        question += "\n<br/> `4.` Information System (**Info**)";
+        question += "\n<br/> `4.` Information System (**info**)";
         question += "\n<br/> `5.` Server Administration (**ser**)";
         question += "\n<br/> `6.` Web Development (**web**)";
         question += "\n\n<br/> `0.` Cancel";
