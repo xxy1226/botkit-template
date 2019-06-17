@@ -7,7 +7,7 @@ var wrong_times = 0;
 
 module.exports = function (controller) {
 
-    controller.hears([/^quiz$/], 'direct_message,direct_mention', function (bot, message) {
+    controller.hears([/[qQ][uU][iI][zZ]/], 'direct_message,direct_mention', function (bot, message) {
 
         bot.startConversation(message, function (err, convo) {
 

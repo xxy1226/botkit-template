@@ -56,7 +56,7 @@ var eas = [
 
 module.exports = function (controller) {
 
-    controller.hears([/^ea$/], 'direct_message,direct_mention', function (bot, message) {
+    controller.hears([/^[eE][aA]$|^[eE][aA]\s|\s[eE][aA]$|\s[eE][aA]\s/], 'direct_message,direct_mention', function (bot, message) {
 
         bot.startConversation(message, function (err, convo) {
 
