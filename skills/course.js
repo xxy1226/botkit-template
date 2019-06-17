@@ -61,6 +61,16 @@ module.exports = function (controller) {
 function showUserPreference(controller, bot, message, userId, course) {
     bot.startConversation(message, function (err, convo) {
 
+        // End this conversation after waited for a certain time
+        convo.setTimeout(WAITING_TIME);
+        convo.onTimeout(function (convo) {
+            convo.gotoThread("no_reply_timeout");
+        });
+        convo.addMessage({
+            text: "Sorry, I cannot hear from you. \nWish you a good time!",
+            action: "stop",
+        }, "no_reply_timeout");
+
         convo.sayFirst(`Hey, I know you! Your main course is **'${course}'**.`);
 
         convo.ask("Should I erase your preference?  (yes/no)", [
@@ -103,6 +113,16 @@ function askForUserPreference(controller, bot, message, userId) {
 
     // Start a conversation
     bot.startConversation(message, function (err, convo) {
+
+        // End this conversation after waited for a certain time
+        convo.setTimeout(WAITING_TIME);
+        convo.onTimeout(function (convo) {
+            convo.gotoThread("no_reply_timeout");
+        });
+        convo.addMessage({
+            text: "Sorry, I cannot hear from you. \nWish you a good time!",
+            action: "stop",
+        }, "no_reply_timeout");
 
         question = "What is your main course?";
         question += "\n<br/> `1.` Programming (**pro**)";

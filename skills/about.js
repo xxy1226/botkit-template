@@ -12,7 +12,7 @@ module.exports = function (controller, bot) {
         "description": "It's an awesome assistant bot!",
 
         // Where to get more information about the bot
-        // "url": "https://github.com/CiscoDevNet/botkit-template",
+        "original_url": "https://github.com/CiscoDevNet/botkit-template",
         "url": "https://github.com/xxy1226/botkit-template",
 
         // Legal owner
@@ -56,11 +56,12 @@ module.exports = function (controller, bot) {
 
         // Return metadata
         var metadata = '{\n'
-            + '   "description" : "' + botcommons["description"] + '",\n'
-            + '   "url"         : "' + botcommons["url"] + '",\n'
-            + '   "owner"       : "' + botcommons["legal-owner"] + '",\n'
-            + '   "support"     : "' + botcommons["support-contact"] + '",\n'
-            + '   "healthcheck" : "' + botcommons["healthcheck"] + '",\n'
+            + '   "description"   : "' + botcommons["description"] + '",\n'
+            + '   "reference_url" : "' + botcommons["original_url"] + '",\n'
+            + '   "url"           : "' + botcommons["url"] + '",\n'
+            + '   "owner"         : "' + botcommons["legal-owner"] + '",\n'
+            + '   "support"       : "' + botcommons["support-contact"] + '",\n'
+            + '   "healthcheck"   : "' + botcommons["healthcheck"] + '",\n'
             + '}\n';
 
         bot.reply(message, '```json\n' + metadata + '\n```');

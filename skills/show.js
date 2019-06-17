@@ -14,9 +14,9 @@ module.exports = function (controller) {
 
         bot.startConversation(message, function (err, convo) {
 
-            convo.ask("Please choose a skill among 'about', 'welcome', 'show', 'help'", [
+            convo.ask("Please choose a skill among 'about', 'welcome', 'show', 'help', 'course', 'quiz', 'z-fallback'", [
                 {
-                    pattern: "^about|welcome|show|help$",
+                    pattern: "^about|welcome|show|help|course|quiz|z-fallback$",
                     callback: function (response, convo) {
                         // ends current conversation
                         convo.stop();
